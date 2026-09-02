@@ -1,12 +1,10 @@
-# CLAUDE.MD -- Academic Project Development with Claude Code
+# CLAUDE.MD -- Tanzania M&A Policy Reforms Project (FCC Regulatory & Benchmarking Review)
 
-<!-- HOW TO USE: Replace [BRACKETED PLACEHOLDERS] with your project info.
-     Customize Beamer environments and CSS classes for your theme.
-     Keep this file under ~150 lines — Claude loads it every session.
+<!-- HOW TO USE: Keep this file under ~150 lines — Claude loads it every session.
      See the guide at docs/workflow-guide.html for full documentation. -->
 
-**Project:** [YOUR PROJECT NAME]
-**Institution:** [YOUR INSTITUTION]
+**Project:** Merger & Acquisition (M&A) Policy Reforms — Implications for Tanzania
+**Institution:** External consulting/research engagement for the Fair Competition Commission (FCC), Tanzania
 **Branch:** main
 
 ---
@@ -28,8 +26,8 @@ and the usual outcome is that all four get thrown away.
 ## Core Principles
 
 - **Plan first** -- enter plan mode before non-trivial tasks; save plans to `quality_reports/plans/`
-- **Verify after** -- compile/render and confirm output at the end of every task
-- **Single source of truth** -- Beamer `.tex` is authoritative; Quarto `.qmd` derives from it
+- **Verify after** -- run/check Stata output (or confirm manually if `stata-mcp` isn't installed) and confirm figures/tables at the end of every task
+- **Single source of truth** -- Stata `.do` files (via `esttab` / `graph export`) are authoritative for every number, table, and figure; the Word report cites them, never hand-typed values
 - **Quality gates** -- nothing ships below 80/100
 - **[LEARN] tags** -- when corrected, save `[LEARN:category] wrong → right` to [MEMORY.md](MEMORY.md)
 
@@ -62,41 +60,38 @@ Nothing clears work until it has a row in [`quality_reports/qualification/LEDGER
 ## Folder Structure
 
 ```
-[YOUR-PROJECT]/
+tanzania-ma-policy/
 ├── CLAUDE.MD                    # This file
 ├── .claude/                     # Rules, skills, agents, hooks
-├── Bibliography_base.bib        # Centralized bibliography
-├── Figures/                     # Figures and images
-├── Preambles/header.tex         # LaTeX headers
-├── Slides/                      # Beamer .tex files
-├── Quarto/                      # RevealJS .qmd files + theme
-├── docs/                        # GitHub Pages (auto-generated)
-├── scripts/                     # Utility scripts + R code
+├── Report/                      # Word master document + section drafts (primary deliverable)
+├── Data/
+│   ├── raw/                     # Confidential/restricted FCC source data — NEVER committed (see confidential-data.md)
+│   └── clean/                   # Derived, disclosure-cleared datasets
+├── Figures/                     # Stata graph export targets (figures for the report)
+├── scripts/
+│   └── stata/                   # Numbered .do pipeline (see stata-code-conventions.md)
+│       └── _outputs/            # esttab tables, logs, sessionInfo.txt, exported figures
 ├── quality_reports/             # Plans, session logs, merge reports, decision records
 ├── explorations/                # Research sandbox (see rules)
 ├── templates/                   # Session log, quality report templates
-└── master_supporting_docs/      # Papers and existing slides
+└── master_supporting_docs/      # FCC benchmarking materials, prior reviews, comparator-jurisdiction papers
 ```
+
+**Present but inactive for this project** (kept as template scaffolding, not deleted):
+`Slides/`, `Quarto/`, `Preambles/`, `Bibliography_base.bib`, `docs/` — these support a Beamer/Quarto
+lecture-slide workflow this project doesn't use. Left in place per owner decision (2026-09-02);
+revisit only if a policymaker slide deck is later commissioned.
 
 ---
 
 ## Commands
 
 ```bash
-# LaTeX (3-pass, XeLaTeX only)
-cd Slides && TEXINPUTS=../Preambles:$TEXINPUTS xelatex -interaction=nonstopmode file.tex
-BIBINPUTS=..:$BIBINPUTS bibtex file
-TEXINPUTS=../Preambles:$TEXINPUTS xelatex -interaction=nonstopmode file.tex
-TEXINPUTS=../Preambles:$TEXINPUTS xelatex -interaction=nonstopmode file.tex
+# Stata: single-command reproduction (numbered pipeline, see stata-code-conventions.md)
+do scripts/stata/99_run_all.do          # from repo root, runs 01..0N in order
 
-# Deploy Quarto to GitHub Pages
-./scripts/sync_to_docs.sh LectureN
-
-# Quality score
-python scripts/quality_score.py Quarto/file.qmd
-
-# Palette sync (LaTeX ↔ SCSS)
-./scripts/check-palette-sync.sh
+# Stata: one stage at a time
+do scripts/stata/01_clean.do
 
 # Backtest: is the repo internally consistent and currently true?
 # (surface-sync + skill-integrity + model-versions + links + spec-conformance + staleness + repo-hygiene + derived-counts + ledger-coverage + hook-battery)
@@ -104,7 +99,14 @@ python scripts/quality_score.py Quarto/file.qmd
 ./scripts/backtest.sh
 ```
 
-**Palette contract:** color names in `Preambles/header.tex` must match SCSS variables in `Quarto/theme-template.scss`. See [`Preambles/README.md`](Preambles/README.md).
+**Note:** `scripts/quality_score.py` and `scripts/check-palette-sync.sh` are Quarto/Beamer-specific
+and do not run against this project's artifacts (Stata `.do`, Word `.docx`) — inactive, not deleted.
+
+**Note:** by default Claude Code can write/edit `.do` files but cannot execute them — no Stata MCP
+server is installed. Verification of Stata output currently requires you to run the script and report
+back, or paste the output. See the suggestions list in
+[`quality_reports/plans/2026-09-02_adapt-config-for-ma-tanzania-project.md`](quality_reports/plans/2026-09-02_adapt-config-for-ma-tanzania-project.md)
+if you'd like `stata-mcp` installed so Claude can run/verify Stata output directly.
 
 ---
 
@@ -122,43 +124,39 @@ Enforced by `/commit` (halts + asks for override) **and** — once you run `./sc
 
 ## Skills Quick Reference
 
-The full table of all skills lives in [README.md](README.md#skills-claudeskills). Most-used, by workflow:
+The full table of all skills lives in [README.md](README.md#skills-claudeskills). Most-used, by this
+project's workflow:
 
-- **Slides / teaching:** `/create-lecture` `/compile-latex` `/deploy` `/qa-quarto` `/slide-excellence` `/syllabus` `/teach-from-paper` `/scaffold-exercises`
-- **Papers / review:** `/review-paper` (`--peer`) `/seven-pass-review` `/respond-to-referees` `/verify-claims` `/proofread` `/humanize` `/submission-disclosures`
-- **Data / reproducibility:** `/data-analysis` `/simulation-study` `/audit-reproducibility` `/diagnose` `/replication-package` `/capture-environment` `/power-analysis` `/disclosure-check`
-- **Research / writing:** `/interview-me` `/lit-review` `/research-ideation` `/preregister` `/grant-proposal` `/data-management-plan`
-- **Verification / rigor:** `/vaccinate` `/challenge` `/oracle-review` `/adjudicate-review` `/differential-audit` `/blast-radius` `/verify-artifact` `/credible-claims` `/deep-audit`
-- **Meta / workflow:** `/commit` `/learn` `/new-skill` `/checkpoint` `/context-status` `/deep-audit` `/coauthor-brief` `/triage-inbox`
+- **Data / modelling (Stata):** `/stata-replication` `/data-analysis` `/audit-reproducibility` `/diagnose` `/capture-environment`
+- **Confidentiality / disclosure:** `/disclosure-check` `/data-management-plan`
+- **Report / review:** `/review-paper` `/proofread` `/humanize` `/verify-claims` `/credible-claims`
+- **Research:** `/lit-review` `/interview-me` `/research-ideation`
+- **Verification / rigor:** `/challenge` `/oracle-review` `/adjudicate-review` `/differential-audit` `/blast-radius` `/verify-artifact` `/deep-audit`
+- **Meta / workflow:** `/commit` `/learn` `/checkpoint` `/context-status` `/triage-inbox`
 
-Stata (`/stata-replication`), R packages (`/r-package-check`), TikZ (`/extract-tikz`, `/new-diagram`), and more — see the README for the complete index.
+Lecture/slide skills (`/create-lecture`, `/compile-latex`, `/deploy`, `/qa-quarto`,
+`/slide-excellence`, `/translate-to-quarto`, `/syllabus`, `/teach-from-paper`, `/scaffold-exercises`)
+remain installed but aren't part of this project's workflow — see the README for the complete index.
 
 ---
 
-<!-- CUSTOMIZE: Replace placeholder rows ([your-env], [.your-class]) with your own.
-     Delete the rows marked "(example — delete)" once you've added yours. -->
+## Report & Analysis Conventions
 
-## Beamer Custom Environments
-
-| Environment | Effect | Use Case |
-| --- | --- | --- |
-| `[your-env]` | [Description] | [When to use] |
-| `keybox` | Gold background box | Key points *(example — delete)* |
-| `definitionbox[Title]` | Blue-bordered titled box | Formal definitions *(example — delete)* |
-
-## Quarto CSS Classes
-
-| Class | Effect | Use Case |
-| --- | --- | --- |
-| `[.your-class]` | [Description] | [When to use] |
-| `.smaller` | 85% font | Dense content *(example — delete)* |
-| `.positive` | Green bold | Good annotations *(example — delete)* |
+Not applicable: this project has no Beamer/Quarto deck, so the environment/CSS-class tables the
+template ships here are removed rather than left as unfillable placeholders. The conventions that
+actually govern this project's generated artifacts (do-file header scaffolding, table/figure output
+naming, `esttab` conventions) live in
+[`.claude/rules/stata-code-conventions.md`](.claude/rules/stata-code-conventions.md).
 
 ---
 
 ## Current Project State
 
-| Lecture | Beamer | Quarto | Key Content |
-| --- | --- | --- | --- |
-| HelloWorld *(sample — delete when ready)* | `HelloWorld.tex` | `HelloWorld.qmd` | Minimal deck to verify setup |
-| 1: [Topic] | `Lecture01_Topic.tex` | `Lecture1_Topic.qmd` | [Brief description] |
+| Component | Status | Key Content |
+| --- | --- | --- |
+| Regulatory & Benchmarking Review | Not started | Comparative review of M&A regulatory regimes; benchmarking Tanzania's FCC framework against comparator jurisdictions |
+| Economic Modelling | Not started | Stata modelling of the effects of policy, legal, and administrative reform options |
+| Final Report (Word) | Not started | Combined analytical + modelling findings; evidence-based recommendations for FCC policymakers |
+
+*(Source materials pending — this table gets filled in with real sections and dates once
+`master_supporting_docs/` receives the FCC's existing materials.)*

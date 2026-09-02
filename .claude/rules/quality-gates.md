@@ -3,6 +3,7 @@ paths:
   - "Slides/**/*.tex"
   - "Quarto/**/*.qmd"
   - "scripts/**/*.R"
+  - "scripts/stata/**/*.do"
 ---
 
 # Quality Review & Scoring Rubrics
@@ -38,6 +39,21 @@ paths:
 | Critical | Hardcoded absolute paths | -20 |
 | Major | Missing set.seed() | -10 |
 | Major | Missing figure generation | -5 |
+
+## Stata Do-files (.do)
+
+Mirrors the discipline mandated by [`stata-code-conventions.md`](stata-code-conventions.md).
+
+| Severity | Issue | Deduction |
+|----------|-------|-----------|
+| Critical | Syntax errors / script does not run cleanly | -100 |
+| Critical | Hardcoded absolute paths (not repo-root-relative) | -20 |
+| Critical | `merge` without `assert()` (silent key mismatch) | -15 |
+| Major | Missing `set seed` / `set sortseed` where randomization or sorting affects output | -10 |
+| Major | Missing reproducibility header (version pin, `clear all`, log) | -5 |
+| Major | Hand-typed table/figure value not produced by `esttab` / `graph export` | -10 |
+| Minor | Missing `sessionInfo.txt` capture | -3 |
+| Minor | Not numbered / not wired into `99_run_all.do` | -2 |
 
 ## Beamer Slides (.tex)
 

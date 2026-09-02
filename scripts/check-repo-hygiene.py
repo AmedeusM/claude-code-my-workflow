@@ -28,6 +28,10 @@ ROOT_ALLOW_DIRS = {
     ".claude", ".git", ".github", ".githooks", ".vscode", "Figures", "Preambles",
     "Quarto", "Slides", "docs", "explorations", "guide", "master_supporting_docs",
     "quality_reports", "scripts", "templates",
+    # Added 2026-09-02 for the Tanzania FCC M&A policy-report fork: this project's
+    # primary deliverable is a Word report (Report/) backed by Stata modelling over
+    # confidential source data (Data/raw, Data/clean) — see CLAUDE.md folder structure.
+    "Data", "Report",
 }
 
 # Names that mean "I was experimenting". These must not live in tracked source.

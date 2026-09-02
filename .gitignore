@@ -90,3 +90,14 @@ scripts/R/_outputs/
 # renders them during gating). Published HTML lives in docs/, never here.
 Quarto/*.html
 Quarto/*_files/
+
+# Confidential / restricted M&A data (see .claude/rules/confidential-data.md) — raw
+# source data must never be committed, not even once. Commit code and derived,
+# disclosure-cleared outputs only.
+# (Excluding directory CONTENTS rather than the directory itself — git cannot
+#  re-include a file whose parent directory is excluded, so a bare "Data/raw/"
+#  pattern would also swallow the .gitkeep needed to track the empty directory.)
+Data/raw/*
+Data/restricted/*
+Data/confidential/*
+!Data/raw/.gitkeep
